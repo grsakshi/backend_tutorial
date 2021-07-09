@@ -11,8 +11,8 @@ mongoose.connect("mongodb://localhost:27017/mydb", {
 })
 .then((res) => {
   console.log("DB Connected");
-})
-;
+});
+
 
 var personSchema = mongoose.Schema({
   name: String,
