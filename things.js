@@ -4,6 +4,8 @@ var upload = multer();
 var app = express();
 var mongoose = require('mongoose');
 
+const port = 3000;
+
 mongoose.connect("mongodb://localhost:27017/mydb", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -22,8 +24,24 @@ var personSchema = mongoose.Schema({
 
 var Person = mongoose.model("Person", personSchema);
 
+app.put("/people/:id", function (req, res) {
+  Person.findByIdAndUpdate(req.params.id, req.body, function (err, response) {
+    if (err)
+      res.json({
+        message: "Error in updating person with id " + req.params.id,
+      });
+    res.json(response);
+  });
+});
+
 app.get('/person', function(req, res){
   res.render('form');
+});
+
+app.get("/people", function (req, res) {
+  Person.find(function (err, response) {
+    res.json(response);
+  });
 });
 
 app.set('view engine', 'pug');
@@ -42,7 +60,6 @@ app.use(express.static('public'));
 
 app.post('/person', function(req, res){
   var personInfo = req.body;
-  console.log(personInfo);
   if(!personInfo.name || !personInfo.age || !personInfo.nationality ){
     res.render("show_message", {
       message: "Sorry, you provided wrong info", type: "error"
@@ -53,8 +70,7 @@ app.post('/person', function(req, res){
         age: personInfo.age,
         nationality: personInfo.nationality,
       });
-      // var s = newPerson.save();
-      // res.json(s);
+
       newPerson.save(function(err, Person){
         if (err){
           res.render("show_message", {
@@ -71,4 +87,6 @@ app.post('/person', function(req, res){
     }
 });
 
-app.listen(3000);
+app.listen(port, () => {
+  console.log(`Server running at port: ${port}`);
+});

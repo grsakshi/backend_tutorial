@@ -1,20 +1,16 @@
 var express = require('express')
+var multer = require('multer')
+var upload = multer()
 var app = express()
+var cookieParser = require("cookie-parser")
 
-app.use('/static', express.static('public'));
+app.use(cookieParser())
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
+app.use(upload.array())
 
-app.set('view engine', 'pug');
-app.set('views', './views');
+var movies = require('./movies')
 //Route handler
-app.get("/first-template", function (req, res) {
-  res.render("first_view");
-});
-
-app.get("/dynamic_view", function (req, res) {
-  res.render("dynamic", {
-    name: "Tutor",
-    url: "http://www.tutorialspoint.com",
-  });
-});
+app.use("/movies", movies);
 
 app.listen(3000);
